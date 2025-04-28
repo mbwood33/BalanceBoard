@@ -1,0 +1,87 @@
+﻿@*
+    App.razor
+    ---------------------------------------------------------------------------
+    This is the root component of the BalanceBoard application.
+    It sets up the routing and the main layout.
+    CSS links for global styles like Bootstrap and Syncfusion should be
+    included here within the <head> section.
+*@
+
+@using BalanceBoard.Components.Layout
+
+<!DOCTYPE html>
+<html lang="en">
+
+@* Define content for the HTML <head> element *@
+<HeadContent>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    @*
+        Link to the application's main CSS file.
+        This is typically in wwwroot/app.css and contains custom styles
+        and styles from the Blazor template (like sidebar width, etc.).
+    *@
+    <link rel="stylesheet" href="app.css" />
+
+    @* Link to the generated styles for the project's compoentns. *@
+    <link rel="stylesheet" href="BalanceBoard.styles.css" />
+
+    @*
+        *** Bootstrap, Boostrap Icons, and Syncfusion CSS links here ***
+    *@
+
+    @* Bootstrap CSS *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUFVO" crossorigin="anonymous">
+
+    @* Bootstrap Icons CSS *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    @* Syncfusion Blazor Bootstrap 5 Theme CSS *@
+    @* Make sure the Syncfusion.Blazor NuGet package is installed *@
+    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
+
+    @*
+        *** End of CSS links ***
+    *@
+
+    @* 
+        The HeadOutlet component renders content provided by PageTitle and other
+        HeadContent components throughout the application.
+        The @rendermode attribute specifies the render mode for the HeadOutlet.
+        Use the same interactive render mode(s) configured in Program.cs.
+    *@
+    <HeadOutlet @rendermode="InteractiveServer" />  
+
+    @* <script src="_framework/blazor.web.js"></script> *@
+</HeadContent>
+
+@* The <body> of the application *@
+<body>
+    @*
+        The Routes component handles routing and renders the main page component.
+        It uses the MainLayout as the default layout.
+    *@
+    <Routes defaultLayout="@typeof(MainLayout)" />
+
+    @*
+        The Blazor script that enables interactive components.
+        The src will be different depending on your interactive render mode(s).
+        For InteractiveServer: _framework/blazor.server.js
+        For InteractiveWebAssembly: _framework/blazor.webassembly.js
+        For InteractiveAuto: _framework/blazor.web.js
+        The Blazor Web App template often includes both server and webassembly scripts.
+    *@
+    <script src="_framework/blazor.web.js"></script> @* This script handles Auto/Server/WebAssembly *a*utomatic selection *@
+
+    @*
+        Optionally, include the Bootstrap JavaScript bundle if your Blazor components
+        rely on Bootstrap's JavaScript features (like dropdowns, modals, etc.)
+        that aren't already handled by Syncfusion or Blazor itself.
+        Place this script *after* the Blazor script.
+    *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhDhG6jhE4q5QKZz8owJ3+jFAqRA" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+﻿@page "/Login"
+@inject BalanceBoard.Services.DatabaseService dbService     /* Injects the database service */
+@inject BalanceBoard.Services.UserSessionService userSessionService     /* Injects the user session service (will be replaced by Identity) */
+@* TODO: Replace user session service with Identity *@
+@inject NavigationManager Navigation
+@using BalanceBoard.Models
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Microsoft.AspNetCore.Components.Forms
+
+@*
+    Login.razor
+    ---------------------------------------------------------------------------
+    This page provides a form for exiswting users to log in to the application.
+    It validates credentials against the database (using the custom service for now)
+    and manages the user session upon successful login. Uses Bootstrap for styling.
+*@
+
+<PageTitle>BalanceBoard Login</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5"> @* Adjusted column widths for better centering on different screen sizes *@
+            <div class="card shadow-lg border-primary"> @* Added a primary color border and stronger shadow *@
+                <div class="card-header bg-primary text-white text-center"> @* Centered header text *@
+                    <h3 class="card-title mb-0">Login to BalanceBoard</h3>
+                </div>
+                <div class="card-body">
+                    @* Blazor EditForm for handling form submission and validation *@
+                    <EditForm Model="@signInModel" OnValidSubmit="@HandleLogin">
+                        @* Validation components *@
+                        <DataAnnotationsValidator /> @* Enables data annotations validation on the model *@
+                        <ValidationSummary class="alert alert-danger" /> @* Displays validation messages using Bootstrap alert style *@
+
+                        @* Email Input Field *@
+                        <div class="mb-3">  @* Margin bottom *@
+                            <label for="email" class="form-label">Email address</label> @* Bootstrap form label *@
+                            @* Syncfusion TextBox with Bootstrap form-control class *@
+                            <SfTextBox @bind-Value="signInModel.Email" Id="email" Placeholder="Enter your email" CssClass="form-control" />
+                            @* Displays validation message for the Email field *@
+                            <ValidationMessage For="@(() => signInModel.Email)" class="text-danger" />
+                        </div>
+
+                        @* Password Input Field *@
+                        <div class="mb-4">  @* Increased margin bottom slightly *@
+                            <label for="password" class="form-label">Password</label> @* Bootstrap form label *@
+                            @* Syncfusion TextBox configured for password input *@
+                            <SfTextBox @bind-Value="signInModel.Password" Id="password" Placeholder="Enter your password" CssClass="form-control" Type="InputType.Password" />
+                            @* Displays validation message for the Password field *@
+                            <ValidationMessage For="@(() => signInModel.Password)" class="text-danger" />
+                        </div>
+
+                        @* Login Button *@
+                        <div class="d-grid gap-2">  @* Creates a grid for buttons for full width *@
+                            @* Syncfusion Button with Bootstrap primary button class and full width *@
+                            <SfButton Type="Submit" CssClass="btn btn-primary btn-lg">
+                                <span class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></span> Login
+                            </SfButton>
+                        </div>
+                    </EditForm>
+
+                    @* Display Status Message *@
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <div class="alert @(message.Contains("successful") ? "alert-success" : "alert-danger") mt-3" role="alert">  @* Dynamic alert color based on message content *@
+                            @message
+                        </div>
+                    }
+                </div>
+                @* Card Footer with Register Link *@
+                <div class="card-footer text-center">
+                    <small class="text-muted">  @* Muted text color *@
+                        Don't have an account? <a href="/register" class="text-primary">Sign Up Here</a> @* Primary color link *@
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SignInModel signInModel = new();    // Model to bind input values to
+    private string message = string.Empty;  // Message string to display feedback to the user
+
+    /// <summary>
+    /// Handles the login process when the form is validly submitted.
+    /// Validates the user's credentials against the database.
+    /// Manages the user session upon successful authentication and redirects to the Dashboard.
+    /// Displays an error message for invalid credentials.
+    /// </summary>
+    private void HandleLogin()
+    {
+        // Validate the user's credentials using the DatabaseService (this will be replaced by Identity)
+        if (dbService.ValidateUser(signInModel.Email, signInModel.Password))
+        {
+            // Retrieve the full user record from the database using the email
+            var user = dbService.GetUserByEmail(signInModel.Email);
+            if (user != null)
+            {
+                // Update the user session service with the user's ID, name, and email.
+                // This custom session service will be replaced by Blazor's AuthenticationStateProvider with Identity.
+                userSessionService.SetCurrentUser(user.Id, user.Name, user.Email);
+            }
+            message = "Login successful!";
+
+            Navigation.NavigateTo("/Dashboard"); // Redirect the user to the Dashboard page after successful login
+        }
+        else
+        {
+            // Display an error message for invalid credentials
+            message = "Invalid email or password. Please try again.";
+        }
+    }
+}

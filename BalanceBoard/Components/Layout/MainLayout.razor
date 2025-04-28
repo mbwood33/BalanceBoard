@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+
+@*
+    MainLayout.razor
+    ---------------------------------------------------------------------------
+    This is the main layout component for the BalanceBoard application.
+    It defines the overall structure of the application's pages, including
+    the navigation menu and the main content area. It uses Bootstrap
+    classes for styling and responsiveness.
+*@
+
+@*
+    Include Bootstrap CSS and Icons CSS:
+    Ensure these links are included in your wwwroot/index.html (for WebAssembly)
+    or Pages/_Layout.cshtml (for Server) depending on your Blazor Web App hosting model.
+    Example (in <head> section):
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUFVO" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" /> // Syncfusion Bootstrap 5 theme
+*@
+
+<div class="page">
+    @* Sidebar - Hidden by default on small screens, shown on medium and up *@
+    @* The 'd-none d-md-block' classes hide it on display < medium and show on >= medium *@
+    <div class="sidebar bg-light d-none d-md-block">
+        <NavMenu />
+    </div>
+
+    <main class="flex-grow-1">  @* Use flex-grow-1 to make main content take available space *@
+        @* Top Row / Navbar - Visible on all screens *@
+        <div class="top-row px-4 bg-white shadow-sm d-flex justify-content-between align-items-center">
+            @*
+                Add a toggle button for the sidebar on small screens here if needed.
+                With the current NavMenu design, the button is inside the NavMenu itself.
+            *@
+            <div class="navbar-brand">BalanceBoard</div>    @* Simple brand text *@
+
+            @* Placeholder for user login/logout status - will be implemented with Identity *@
+            <div class="d-flex align-item-center">
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" class="text-muted me-3">About Blazor</a>
+                @* Example User Status (replace with actual auth state logic) *@
+                @*
+                    <span class="me-2">Welcome, User!</span>
+                    <a href="/Account/Logout">Logout</a>
+                *@
+                <a href="/Login" class="btn btn-outline-primary btn-sm me-2">Login</a>
+                <a href="/Register" class="btn btn-primary btn-sm">Register</a>
+            </div>
+        </div>
+
+        @* Main Content Area - Use Bootstrap container for padding and centering *@
+        <div class="context px-4 mt-4"> @* Margin-top *@
+            <div class="container-fluid">   @* Use container-fluid for full width within content area *@
+                @Body   @* Render the current page component here *@
+            </div>
+        </div>
+    </main>
+</div>
+
+@* Error UI for handling unhandled exceptions in Blazor *@
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

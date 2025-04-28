@@ -1,0 +1,48 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+@*
+    Home.razor
+    ---------------------------------------------------------------------------
+    This is the main landing page for the BalanceBoard application.
+    It provides a brief introduction and directs users to either log in or register.
+    Uses bootstrap classes for layout and styling.
+*@
+
+<PageTitle>Welcome to BalanceBoard</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">    @* Adjusted column width for better centering on larger screens *@
+        <div class="col-md-10 col-lg-8 rounded-3 shadow-lg">    @* Add more padding, rounded corners, and a stronger shadow *@
+            <h1 class="display-4 text-primary mb-3">Welcome to BalanceBoard!</h1>   @* Add primary text color, bottom margin *@
+            <p class="lead text-muted mb-4">    @* Used muted text color, bottom margin *@
+                Your all-in-one tool for tracking macronutrients and monitoring your weigth progress.
+            </p>
+            <hr class="my-4" /> @* Added margin-top and bottom *@
+            <h4 class="mb-3">Key Features</h4>  @* Bottom margin *@
+            <ul class="list-unstyled mb-4"> @* Removed default list styling, added bottom margin *@
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2" /> @* Bootstrap icon with success color and right margin *@
+                    Calculate your personalized macronutrient requirements based on your profile.
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2" /> @* Bootstrap icon with success color and right margin *@
+                    Log and track your weight and body composition over time with interactive graphs.
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2" /> @* Bootstrap icon with success color and right margin *@
+                    Monitor your progress and adjust your goals.
+                </li>
+            </ul>
+            <div class="mt-4">  @* Added margin-top *@
+                @* Bootstrap buttons with appropriate classes and margins *@
+                <a href="/Login" class="btn btn-primary btn-lg me-3" role="button">
+                    <span class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></span> Login
+                </a>
+                <a href="/Register" class="btn btn-outline-secondary btn-lg" role="button"> @* Used outline button for secondary action *@
+                    <span class="bi bi-person-plus me-2" aria-hidden="true"></span> Register
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

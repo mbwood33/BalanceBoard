@@ -1,0 +1,72 @@
+# From C:\Dev\BalanceBoard
+docker compose -f BalanceBoard/docker-compose.yml up -d --build
+
+Step 8: View Container Logs (Optional but Recommended)
+
+# From C:\Dev\BalanceBoard
+docker compose -f BalanceBoard/docker-compose.yml logs -f postgres # View database logs
+
+# From C:\Dev\BalanceBoard
+docker compose -f BalanceBoard/docker-compose.yml logs -f balanceboard_app # View application logs (including migration output)
+
+Step 9: Access Your Application and pgAdmin
+
+Once the containers are running:
+
+Your BalanceBoard application should be accessible in your web browser at the host port you mapped, which is typically http://localhost:8080 (based on the ports: - "8080:80" mapping in docker-compose.yml).
+pgAdmin should be accessible at http://localhost:5050 (based on the ports: - "5050:80" mapping). You can log in with the pgAdmin credentials you set in the .env file. Within pgAdmin, you can connect to the PostgreSQL database using Host: postgres, Port: 5432, and your database credentials.
+To Stop the Containers:
+
+When you're done, in your command prompt at the repository root (C:\Dev\BalanceBoard), run:
+
+Bash
+
+# From C:\Dev\BalanceBoard
+docker compose -f BalanceBoard/docker-compose.yml down
+
+
+
+
+
+
+
+Command Line for Docker Compose
+From the command line, in the directory containing your docker-compose.yml and your project's Dockerfile, you'll use these commands:
+- Build and Run (in detached mode):
+  
+  docker compose up -d --build
+
+- View Logs:
+
+  docker compose logs -f postgres # To follow PostgreSQL logs
+  docker compose lgos -f balanceboard_app # To follow your application logs
+
+- Stop containers:
+
+  docker compose down
+
+
+
+appsettings.json Configuration
+When running outside of Docker (e.g., during development on your host machine), your application needs to connect to the PostgreSQL database running inside Docker. In this case, the Host will be localhost (or the Docker host IP if you're on an older system or specific network setup), and the port will be the host port you mapped (5431).
+
+When running inside the balanceboard_app Docker container, the application connects to the postgres service using the internal Docker network. The Host will be postgres and the port will be the container port (5432).
+
+.NET Configuration handles this gracefully. You can have different appsettings.json files for different environments (e.g., appsettings.Development.json, appsettings.Production.json). However, the environment variables set in docker-compose.yml have higher precedence and will override the settings in appsettings.json when running in Docker.
+
+So, your appsettings.json (or appsettings.Development.json) for local development could look like this:
+
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5431;Database=balanceboard_db;Username=postgres;Password=secretPassword123!"
+  },
+  // ... other settings
+}
+
+Add the environment variable in docker-compose.yml for balanceboard_app will override this connection string when running via Compose, directing the application container to connect to the postgres service on port 5432.
+
+
+
+Applying Migrations with Portability for GitHub
+
+For portability and ease of use with GitHub, the best approach is to include the migration application as part of your application's Docker entrypoint. This ensures that when the application container starts, it automatically applies any pending database migrations before the application itself fully launches.

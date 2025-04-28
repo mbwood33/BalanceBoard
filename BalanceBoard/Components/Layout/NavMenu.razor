@@ -1,0 +1,74 @@
+﻿@*
+    NavMenu.razor
+    ---------------------------------------------------------------------------
+    This component provides the navigation menu for the BalanceBoard application.
+    It is designed to be included within the MainLayout.
+    It uses Bootstrap classes for styling and includes a toggle button
+    for collapsing the menu on smaller screens.
+*@
+
+@* The 'top-row' class provides padding and background *@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        @* Brand/Logo area - Clickable link to the home page *@
+        <a class="navbar-brand" href="">BalanceBoard</a>
+
+        @* Toggle button for collapsing the navigation menu on smaller screens *@
+        @* It controls the 'collapse' class on the menu div *@
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon" />    @* Bootstrap icon for the toggler *@
+        </button>
+    </div>
+</div>
+
+@*
+    Navigation menu content
+    The 'collapse' class is controlled by the 'collapseNavMenu' variable via @NavMenuCssClass.
+    The 'nav-scrollable' class (often defined in app.css) handles scrolling if the menu is long.
+    The @onclick stops click propagation to prevent the menu from closing if you click inside it,
+    but allows clicking outside (on the main content area) to close it.
+*@
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    @* Bootstrap nav classes for a vertical navigation *@
+    <nav class="flex-column">
+        @* Navigation Link for Home *@
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                @* Bootstrap Icon and text *@
+                <span class="bi bi-house-door-fill me-2" aria-hidden="true" />
+            </NavLink>
+        </div>
+        @* Navigation Link for Dashboard *@
+        <div class="nav-item px-3">
+            @* This link will typically require authentication *@
+            <NavLink class="nav-link" href="dashboard">
+                <span class="bi bi-speedometer me-2" area-hidden="true"></span> Dashboard   @* <-- ??? *@
+            </NavLink>
+        </div>
+        @*
+            Add more navigation links here as needed.
+            Links related to Account (Login, Register, Profile, Logout) are often
+            better placed in the top bar or handled through the Identity UI components.
+        *@
+    </nav>
+</div>
+
+@code {
+    // Boolean to control the collapse state of the navigation menu
+    private bool collapseNavMenu = true;
+
+    /// <summary>
+    /// CSS class string that controls the visibility of the navigation menu.
+    /// Returns "collapse" when collapseNavMenu is true, otherwise null.
+    /// </summary>
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    /// <summary>
+    /// Toggles the state of the navigation menu between expanded and collapsed.
+    /// This method is called when the navbar toggler button is clicked.
+    /// </summary>
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
