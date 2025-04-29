@@ -1,13 +1,12 @@
 using BalanceBoard.Components;
-using BalanceBoard.Components.Account;  // Contains Identity Razor components
-using BalanceBoard.Data;    // Contains ApplicationDbContext
-using BalanceBoard.Models;  // Contains custom ApplicationUser
+// using BalanceBoard.Components.Account;  // Contains Identity Razor components
+// using BalanceBoard.Data;    // Contains ApplicationDbContext
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+// using Microsoft.AspNetCore.Identity;
+// using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;   // Needed for accessing configuration
 using Syncfusion.Blazor;    // Needed for Syncfusion services
-using Npgsql;
+// using Npgsql;
 
 // Using custom services (commenting out user management parts later)
 // using BalanceBoard.Services;
@@ -36,39 +35,39 @@ else
 // --- End Syncfusion Blazor registration ---
 
 // Setup services fro ASP.NET Core Identity and Blazor Authentication State
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>(); // Helps access user info in components
-builder.Services.AddScoped<IdentityRedirectManager>();  // Manages redirects during auth operations
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>(); // Provides the AuthenticationState based on Identity
+// builder.Services.AddCascadingAuthenticationState();
+// builder.Services.AddScoped<IdentityUserAccessor>(); // Helps access user info in components
+// builder.Services.AddScoped<IdentityRedirectManager>();  // Manages redirects during auth operations
+// builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>(); // Provides the AuthenticationState based on Identity
 
 // Configure Authentication using Identity Cookies
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;    // Sets the default authentication scheme
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme; // Used for external logins (like Google, Facebook)
-    })
-    .AddIdentityCookies();  // Configures Identity to use cookie-based authentication
+// builder.Services.AddAuthentication(options =>
+//      {
+//         options.DefaultScheme = IdentityConstants.ApplicationScheme;    // Sets the default authentication scheme
+//         options.DefaultSignInScheme = IdentityConstants.ExternalScheme; // Used for external logins (like Google, Facebook)
+//     })
+//     .AddIdentityCookies();  // Configures Identity to use cookie-based authentication
 
 // Configure the DbContext for ASP.NET Core Identity to use PostgreSQL
 // Retrieves the connection string from configuration (e.g., appsettings.json)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 // Registers the ApplicationDbContext with Entity Framework Core, configured to use PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));   // Using Npgsql for PostgreSQL
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseNpgsql(connectionString));   // Using Npgsql for PostgreSQL
 
 // Adds services for database developer page exceptions (useful in development)
-builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 
+// builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 
 
 // Configures ASP.NET Core Identity, using the custom ApplicationUser and ApplicationDbContext
-builder.Services.AddIdentityCore<BalanceBoard.Data.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true) // Configure Identity options (e.g., email confirmation)
-    .AddEntityFrameworkStores<ApplicationDbContext>()   // Configures Identity to use EF Core with ApplicationDbContext for data storage
-    .AddSignInManager() // Adds the SignInManager for handling user logins
-    .AddDefaultTokenProviders();    // Adds default token providers (for password reset, email confirmation tokens)
+// builder.Services.AddIdentityCore<BalanceBoard.Data.ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true) // Configure Identity options (e.g., email confirmation)
+//     .AddEntityFrameworkStores<ApplicationDbContext>()   // Configures Identity to use EF Core with ApplicationDbContext for data storage
+//     .AddSignInManager() // Adds the SignInManager for handling user logins
+//     .AddDefaultTokenProviders();    // Adds default token providers (for password reset, email confirmation tokens)
 
 // Registers a placeholder email sender for Identity (replace with a real one for production)
 // Identity requires an IEmailSender, even if email confirmation is not strictly enforced initially
-builder.Services.AddSingleton<IEmailSender<BalanceBoard.Data.ApplicationUser>, IdentityNoOpEmailSender>();
+// builder.Services.AddSingleton<IEmailSender<BalanceBoard.Data.ApplicationUser>, IdentityNoOpEmailSender>();
 
 // --- Custom Services - The user management parts will be replaced by Identity ---
 // Your custom DatabaseService. The user management parts will be replaced by Identity.
@@ -107,6 +106,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();  // Configured for Interactive Server rendering
 
 // Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
+// app.MapAdditionalIdentityEndpoints();
 
 app.Run();

@@ -3,34 +3,49 @@
 services:
   # PostgreSQL Database Service
   postgres:
-    image: postgres:latest # Use the latest official PostgreSQL image
-    container_name: balanceboard_postgres # Descriptive container name
-    restart: unless-stopped # Automatically restart the container unless manually stopped
+    # Use the latest official PostgreSQL image
+    image: postgres:latest
+    # Descriptive container name
+    container_name: balanceboard_postgres
+    # Automatically restart the container unless manually stopped
+    restart: unless-stopped 
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres} # Use environment variable, default to postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secretpassword} # Use environment variable, default to password (CHANGE THIS FOR PRODUCTION!)
-      POSTGRES_DB: ${DB_NAME:-balanceboard_db} # Use environment variable, default database name
+      # Use environment variable, default to postgres
+      POSTGRES_USER: ${DB_USER:-postgres}
+      # Use environment variable, default to password (CHANGE THIS FOR PRODUCTION!)
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secretpassword}
+      # Use environment variable, default database name
+      POSTGRES_DB: ${DB_NAME:-balanceboard_db}
       # Optional: Configure postgreSQL logging if needed, e.g., log all queries (be cautious in production!)
       # POSTGRES_EXTRA_OPTS: "-c log_statement=all" # Example: logs all SQL statements - can be noisy!
     ports:
-      - "5431:5432" # Map host port 5431 to container port 5432
+      # Map host port 5431 to container port 5432
+      - "5431:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data # Persistent volume for database data
+      # Persistent volume for database data
+      - pgdata:/var/lib/postgresql/data
     # Note: This service definition ends here
 
 
   # pgAdmin Service (Optional, but useful for managing the database)
   pgadmin:
-    image: dpage/pgadmin4 # Use the official pgAdmin 4 image
-    container_name: balanceboard_pgadmin # Descriptive container name
-    restart: unless-stopped # Automatically restart the container unless manually stopped
+    # Use the official pgAdmin 4 image
+    image: dpage/pgadmin4
+    # Descriptive container name
+    container_name: balanceboard_pgadmin
+    # Automatically restart the container unless manually stopped
+    restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@balanceboard.com} # pgAdmin login email
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin} # pgAdmin password (CHANGE THIS!)
+      # pgAdmin login email
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@balanceboard.com}
+      # pgAdmin password (CHANGE THIS!)
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
     ports:
-      - "5050:80" # Map host port 5050 to container port 80 (pgAdmin's web port)
+      # Map host port 5050 to container port 80 (pgAdmin's web port)
+      - "5050:80"
     depends_on:
-      - postgres # Ensure postgres starts before pgadmin
+      # Ensure postgres starts before pgadmin
+      - postgres
     # If you need pgAdmin to connect to the postgres container using the service name:
     # Add a server definition to pgAdmin's configuration or connect via its UI.
     # Host: postgres (the service name)
@@ -42,21 +57,31 @@ services:
 
   # BalanceBoard Application Service
   # You will need a Dockerfile in your project root to build this image
-  balanceboard_app: # Service name for your Application
-    build: . # Build this image from the Dockerfile in the current directory
-    image: balanceboard-app:${APP_VERSION:-latest} # Use a descriptive image name and tag
-    container_name: balanceboard_app_container # Descriptive container name
-    restart: unless-stopped # Automatically restart the container unless manually stopped
+  # Service name for your Application
+  balanceboard_app: 
+    # Build this image from the Dockerfile in the current directory
+    build: . 
+    # Use a descriptive image name and tag
+    image: balanceboard-app:${APP_VERSION:-latest} 
+    # Descriptive container name
+    container_name: balanceboard_app_container 
+    # Automatically restart the container unless manually stopped
+    restart: unless-stopped
     ports:
-      - "8080:80" # Example: Map host port 8080 to the application container's port 80
+      # Example: Map host port 8080 to the application container's port 80
+      - "8080:80"
     environment:
-      ASPNETCORE_ENVIRONMENT: Development # Or Production, Staging, etc.
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${DB_NAME:-balanceboard_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-secretpassword} # Connection string using the postgres service name
-      SyncfusionLicenseKey: ${SYNCFUSION_LICENSE_KEY} # Pass the Syncfusion license key via environment variable
+      # Or Production, Staging, etc.
+      ASPNETCORE_ENVIRONMENT: Development
+      # Connection string using the postgres service name
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${DB_NAME:-balanceboard_db};Username=${DB_USER:-postgres};Password=${DB_PASSWORD:-secretpassword}
+      # Pass the Syncfusion license key via environment variable
+      SyncfusionLicenseKey: ${SYNCFUSION_LICENSE_KEY}
       # Add any other necessary environment variables for your Application
     # Corrected Indentation Below
     depends_on:
-      - postgres # Ensure the database is running before the app starts
+      # Ensure the database is running before the app starts
+      - postgres
     #volumes: # Commented out volumes key
       # If you need live code updates without rebuilding the image (for development):
       # - .:/app # Mount your project directory into the container (adjust paths as needed)
@@ -65,4 +90,5 @@ services:
 
 # Docker Volumes for persistent data
 volumes:
-  pgdata: # Volume for PostgreSQL data
+  # Volume for PostgreSQL data
+  pgdata: 
