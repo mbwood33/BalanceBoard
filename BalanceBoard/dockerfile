@@ -1,86 +1,33 @@
-# Dockerfile for the BalanceBoard application.
-# Uses a multi-stage build for efficiency.
-
-# syntax=docker/dockerfile:1 # Recommended syntax loader
-
-# --- Build Stage ---
-# Create a stage for building the application using the .NET SDK image.
-# Using alpine variant for smaller image size.
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 
-# Set the working directory inside the container.
-WORKDIR /source
-
-# Copy the project file(s) and restore dependencies.
-# This step is separated to allow Docker to cache the dependency restoration
-# if only the code changes, but not the project file.
-# Use the correct project name for your .csproj file.
-COPY ["BalanceBoard.csproj", "./BalanceBoard/"] # Adjust path if your .csproj is not in the root of the repo
-
-# Set the working directory to the project directory for restoring and publishing.
-WORKDIR /source/BalanceBoard # Set working directory to your project folder
-
-# Restore NuGet packages.
-# Leverage a cache mount for NuGet packages to speed up subsequent builds.
-RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet restore
-
-# Copy the rest of the application code into the container.
-# Copy from the source root to the project working directory.
-COPY . /source/BalanceBoard/
-
-
-# This is the architecture you’re building for, which is passed in by the builder.
-# Placing it here allows the previous steps to be cached across architectures.
-ARG TARGETARCH
-
-# Build and publish the application for release.
-# '-c Release' specifies the Release configuration.
-# '-a ${TARGETARCH/amd64/x64}' specifies the target architecture.
-# '--use-current-runtime' and '--self-contained false' (optional, depends on deployment needs)
-# '-o /app' specifies the output directory within this build stage.
-RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet publish -c Release -o /app --no-restore
-
-
-# --- Final (Runtime) Stage ---
-# Create a new stage for running the application.
-# Use a minimal ASP.NET Core runtime image. Alpine variant for smaller size.
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
-
-# Set the working directory for the final stage.
 WORKDIR /app
 
-# Copy the published application output from the "build" stage to the final stage.
-COPY --from=build /app .
+COPY ["BalanceBoard.csproj", "./"]
 
-# --- Migrations Entrypoint Setup ---
-# Copy the custom entrypoint script into the container.
-# This script will apply database migrations before starting the app.
-COPY entrypoint.sh . # Assuming entrypoint.sh is in your project root
+RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
+    dotnet restore BalanceBoard.csproj
+	
+COPY . .
 
-# (Optional) If you are using a wait-for-it.sh script, copy it and make it executable.
-# COPY wait-for-it.sh .
-# RUN chmod +x wait-for-it.sh
+ARG TARGETARCH
 
-# Make the entrypoint script executable.
+RUN --mount=type=cache,id=nuget,target=root/.nuget.packages \
+    dotnet publish -c Release -o /app/publish_output -r linux-musl-${TARGETARCH/amd64/x64} --self-contained false
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+WORKDIR /app
+
+RUN apk add --no-cache libpq
+
+COPY --from=build /app/publish_output .
+
+COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-# Set the entrypoint for the container to the script.
-# The script will handle applying migrations and then starting the application.
+COPY wait-for-it.sh .
+RUN chmod +x wait-for-it.sh
+
 ENTRYPOINT ["./entrypoint.sh"]
-# --- End Migrations Entrypoint Setup ---
 
-
-# Switch to a non-privileged user (defined in the base image) that the app will run under.
-# This is a security best practice. $APP_UID is typically defined in the base image.
 USER $APP_UID
-
-# The port your application listens on within the container.
-# This should match the port your Kestrel server is configured to use (default is 80 in the base image).
 EXPOSE 80
-
-# The default command to run if no entrypoint is set (or if the entrypoint finishes).
-# Since we are using an ENTRYPOINT script that starts the app, this CMD is often not needed,
-# but you can keep it as a fallback or for understanding the original command.
-# CMD ["dotnet", "BalanceBoard.dll"] # Adjusted dll name
